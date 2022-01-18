@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  api:
+    build:
+      dockerfile: ./api/Dockerfile
+      context: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - "postgres"
+  order_matcher:
+    build:
+      dockerfile: ./order_matcher/Dockerfile
+      context: .
+    depends_on:
+      - "postgres"
+      - "rabbitmq"
+  postgres:
+    image: "postgres:14.1"
+    environment:
+      # change before running in production
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=trading_exchange
+    ports:
+      - "5432:5432"
+  rabbitmq:
+    image: "rabbitmq:3.9"
+    ports:
+      - "5672:5672"

@@ -36,24 +36,29 @@ def get_matching_order(session, order, exclude=set()):
 
     return order_query.first()
 
-def update_stock_for_sale(session, seller_id, stock_identifier, quantity):
+def update_stock_for_sale(session, seller, stock_identifier, quantity):
     stock = (session
         .query(stocks.Stocks)
         .filter(stocks.Stocks.identifier == stock_identifier)
-        .filter(stocks.Stocks.user_id == seller_id)
+        .filter(stocks.Stocks.user_id == seller.id)
         .first())
     # sellable quantity should already be correct
     stock.quantity -= quantity
     session.commit()
 
-def update_stock_for_purchase(session, buyer_id, stock_identifier, quantity):
+def update_stock_for_purchase(session, buyer, stock_identifier, quantity):
     stock = (session
         .query(stocks.Stocks)
         .filter(stocks.Stocks.identifier == stock_identifier)
-        .filter(stocks.Stocks.user_id == buyer_id)
+        .filter(stocks.Stocks.user_id == buyer.id)
         .first())
-    stock.quantity += quantity
-    stock.sellable_quantity += quantity
+    # create the stock if the user doesn't have it yet
+    if not stock:
+        stock = stocks.Stocks(stock_identifier, quantity)
+        buyer.stocks.append(stock)
+    else:
+        stock.quantity += quantity
+        stock.sellable_quantity += quantity
     session.commit()
 
 def handle_order(ch, method, properties, body):
@@ -83,8 +88,8 @@ def handle_order(ch, method, properties, body):
             # scope down the buyers cash (purchase price already factored into liquid cash)
             buyer.cash -= price_per_share * match_amount
             # move the shares
-            update_stock_for_purchase(session, buyer.id, order.stock_identifier, match_amount)
-            update_stock_for_sale(session, seller.id, order.stock_identifier, match_amount)
+            update_stock_for_purchase(session, buyer, order.stock_identifier, match_amount)
+            update_stock_for_sale(session, seller, order.stock_identifier, match_amount)
             # just to be safe, commit what we've done so far before continuing
             session.commit()
 

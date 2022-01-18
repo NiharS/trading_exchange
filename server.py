@@ -65,10 +65,16 @@ def get_user_orders(user_id):
 @app.route("/api/v1/users/<user_id>/orders", methods=["POST"])
 def create_user_order(user_id):
     body = request.get_json(force=True)
+    global queue_conn
     with Session() as session:
         try:
             order = order_controller.create_order(body, user_id, session)
-            channel = queue.create_trading_channel(queue_conn)
+            try:
+                channel = queue.create_trading_channel(queue_conn)
+            except Exception:
+                # try recreating the connection
+                queue_conn = queue.create_connection()
+                channel = queue.create_trading_channel(queue_conn)
             queue.send_on_channel(str(order.id), channel)
             return order.to_dict(), 201
         except Exception as e:

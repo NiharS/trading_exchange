@@ -41,4 +41,4 @@ Orders are matched based on buyers willing to pay more than a seller is willing 
 
 When a sell order comes in, the matcher looks for existing buy orders for the asset with the same or higher price, and uses the buy order's price to make the trade. The matcher prioritizes the highest buy price, then takes the oldest order if the buy prices are equal. If either order isn't fully completed by the trade, the remaining amount is notated in the order so the rest can be completed later.
 
-When a buy order comes in, the matcher checks for sellers
+When a buy order comes in, the matcher checks for sellers, and just matches on the oldest seller willing to sell the security for the price the buyer lists.

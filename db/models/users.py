@@ -25,16 +25,18 @@ class Users(Base):
         self.cash = cash
         self.liquid_cash = cash
         self.stocks = stocks
-    
+
     def __repr__(self):
-        return f"{self.id}\n" + \
-            f"cash:{self.cash}, liquid={self.liquid_cash}\n" + \
-            "stocks:\n".join([f"  {stock}\n" for stock in self.stocks])
-    
+        return (
+            f"{self.id}\n"
+            + f"cash:{self.cash}, liquid={self.liquid_cash}\n"
+            + "stocks:\n".join([f"  {stock}\n" for stock in self.stocks])
+        )
+
     def to_dict(self):
         return {
             "id": self.id,
             "cash_cents": self.cash,
             "liquid_cash_cents": self.liquid_cash,
-            "stocks": [stock.to_dict() for stock in self.stocks]
+            "stocks": [stock.to_dict() for stock in self.stocks],
         }

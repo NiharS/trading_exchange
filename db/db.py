@@ -16,7 +16,9 @@ retries = 10
 time_between_retries = 5
 while retries > 0:
     try:
-        engine = create_engine(f"postgresql+psycopg2://postgres:password@{DB_URL}:5432/trading_exchange")
+        engine = create_engine(
+            f"postgresql+psycopg2://postgres:password@{DB_URL}:5432/trading_exchange"
+        )
         Base.metadata.create_all(bind=engine)
         break
     except Exception as e:

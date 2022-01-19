@@ -1,17 +1,26 @@
 from http import server
 from time import time, timezone
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    DateTime,
+)
 from . import Base
 from sqlalchemy.sql import func
+
 
 class Orders(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True, autoincrement="auto")
     user_id = Column(Integer, ForeignKey("users.id"))
-    
+
     # The identifier of the stock to be traded
     stock_identifier = Column(String)
-    
+
     # The amount of the stock to be traded
     quantity = Column(BigInteger)
 
@@ -34,7 +43,7 @@ class Orders(Base):
         self.remaining_quantity = quantity
         self.price_cents = price_cents
         self.is_sell_order = is_sell_order
-    
+
     def repr(self):
         return f"id={self.id}, user_id={self.user_id}, stock={self.stock_identifier}, quantity = {self.quantity}, remaining_quantity={self.remaining_quantity}, price={self.price_cents}"
 
@@ -46,5 +55,5 @@ class Orders(Base):
             "quantity": self.quantity,
             "remaining_quantity": self.remaining_quantity,
             "price_cents": self.price_cents,
-            "created_at": self.created_ts.isoformat()
+            "created_at": self.created_ts.isoformat(),
         }

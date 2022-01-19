@@ -18,6 +18,7 @@ class Stocks(Base):
     quantity = Column(BigInteger)
     # How many are available to sell?
     sellable_quantity = Column(BigInteger)
+
     def __init__(self, stock_identifier, quantity):
         self.identifier = stock_identifier
         self.quantity = quantity
